@@ -1,0 +1,1 @@
+web: gunicorn_django --pythonpath=/app/crossword --settings=crossword.settings.production
