@@ -90,3 +90,5 @@ class Puzzle(TimeStampedModel):
 
         super(Puzzle, self).save(*args, **kwargs)
 
+
+

@@ -2,6 +2,7 @@ import struct
 import logging
 import string
 import operator
+import zipfile
 
 header_format = '''<
              H 11s        xH

@@ -1,20 +1,24 @@
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView
 
 from puzzles.models import Puzzle
 
-def index(request):
-    puzzle_list = Puzzle.objects.all()
-    context = {
-        'puzzle_list': puzzle_list,
-    }
-    return render(request, 'puzzles/index.html', context)
+# Mixins
 
-def detail(request, puzzle_id):
-    puzzle = get_object_or_404(Puzzle, pk=puzzle_id)
-    contents = puzzle.read_puzzle()
-    clues = contents.clue_numbering()
-    return render(request, 'puzzles/detail.html', {
-    	'puzzle': puzzle,
-    	'clues': clues
-    })
+# Classes
+
+class PuzzleListView(ListView):
+    model = Puzzle
+
+class PuzzleDetailView(DetailView):
+    context_object_name = "puzzle"
+    model = Puzzle
+
+    def get_context_data(self, **kwargs):
+        context = super(PuzzleDetailView, self).get_context_data(**kwargs)
+
+        # Get all the clues and number them
+        puzzle = self.get_object()
+        contents = puzzle.read_puzzle()
+        context['clues'] = contents.clue_numbering()
+        
+        return context
