@@ -1,0 +1,20 @@
+<h1>{{ puzzle.title }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{{ puzzle.author }}
+{{ puzzle.copyright }}
+
+<h2>Across</h2>
+<ol class="across">
+	{% for clue in clues.across %}
+		<li value="{{ clue.num }}">{{ clue.clue }} ({{ clue.len }})</li>
+	{% endfor %}
+</ol>
+
+<h2>Down</h2>
+<ol class="down">
+	{% for clue in clues.down %}
+		<li value="{{ clue.num }}">{{ clue.clue }} ({{ clue.len }})</li>
+	{% endfor %}
+</ol>

@@ -187,6 +187,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     # Database migration helpers:
     'south',
+    'django_evolution',
 )
 
 # Apps specific for this project go here.

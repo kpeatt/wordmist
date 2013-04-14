@@ -1,6 +1,8 @@
 # puzzles/models.py
 
 from django.db import models
+from django.conf import settings
+from django.utils import timezone
 from model_utils.models import TimeStampedModel
 import puz
 
@@ -62,8 +64,29 @@ class Source(TimeStampedModel):
 
 class Puzzle(TimeStampedModel):
     source = models.ForeignKey(Source)
-    title = models.CharField(max_length=60, blank=True, null=True)
-    puzzle = models.FileField(upload_to="media/puzzles/")
+    title = models.CharField(max_length=255, default='Title')
+    author = models.CharField(max_length=255, default='Author')
+    copyright = models.CharField(max_length=100, default='Copyright')
+    puzzle = models.FileField(upload_to=lambda self, fname:self.save_path(fname))
 
+    def __unicode__(self):
+        return self.title
 
+    def save_path(self, filename):
+        return 'puzzles/' + self.source.slug + '/' + filename
+
+    def read_puzzle(self):
+        contents = puz.read(self.puzzle.path)
+        return contents
+
+    def save(self, *args, **kwargs):
+        """Save crossword metadata"""
+        super(Puzzle, self).save(*args, **kwargs)
+        puzzledata = self.read_puzzle()
+
+        self.title = puzzledata.title.strip()
+        self.author = puzzledata.author.strip()
+        self.copyright = puzzledata.copyright.strip()
+
+        super(Puzzle, self).save(*args, **kwargs)
 

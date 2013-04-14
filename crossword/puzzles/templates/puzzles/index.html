@@ -1,0 +1,9 @@
+{% if puzzle_list %}
+    <ul>
+    {% for puzzle in puzzle_list %}
+        <li><a href="{% url 'detail' puzzle.id %}">{{ puzzle.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No puzzles are available.</p>
+{% endif %}
