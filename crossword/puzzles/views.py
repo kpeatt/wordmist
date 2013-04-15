@@ -1,6 +1,8 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
+from django.views.generic.detail import SingleObjectMixin
 
-from puzzles.models import Puzzle
+from core.views import ObjectApiMixin
+from puzzles.models import Puzzle, Source
 
 # Mixins
 
@@ -18,7 +20,11 @@ class PuzzleDetailView(DetailView):
 
         # Get all the clues and number them
         puzzle = self.get_object()
-        contents = puzzle.read_puzzle()
-        context['clues'] = contents.clue_numbering()
-        
+        context['clues'] = puzzle.get_clues()
+
         return context
+
+# APIs
+
+class PuzzleObjectApiView(ObjectApiMixin, View):
+    model = Puzzle

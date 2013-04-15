@@ -1,5 +1,6 @@
 # puzzles/models.py
 
+import re, datetime
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -50,7 +51,8 @@ class Source(TimeStampedModel):
     # Filetype (JPZ or PUZ)
     FILETYPES = (
         ('puz', 'puz'),
-        ('jpz', 'jpz')
+        ('jpz', 'jpz'),
+        ('xml', 'xml')
     )
     filetype = models.CharField(max_length=3,
                                 choices=FILETYPES,
@@ -61,6 +63,19 @@ class Source(TimeStampedModel):
 
     def __unicode__(self):
         return self.name
+
+    def parse_filename(self):
+        matches = re.search('\[(.*?)\]', self.filename)
+        if (matches):
+            today = datetime.date.today()
+            datestr = ''
+            for datetype in list(matches.group(0)):
+                datestr += '%'+datetype
+            datestr = today.strftime(datestr)
+            self.filename = re.sub('\[(.*?)\]', datestr, self.filename)
+            self.filename = self.filename.replace('[', '')
+            self.filename = self.filename.replace(']', '')
+        return self.filename
 
 class Puzzle(TimeStampedModel):
     source = models.ForeignKey(Source)
@@ -73,14 +88,32 @@ class Puzzle(TimeStampedModel):
         return self.title
 
     def save_path(self, filename):
+        """ Creates a save path using the source's slug as the folder """
         return 'puzzles/' + self.source.slug + '/' + filename
 
     def read_puzzle(self):
-        contents = puz.read(self.puzzle.path)
-        return contents
+        """ Reads the puzzle file and returns a puzzle object """
+        puzzledata = puz.read(self.puzzle.path)
+        return puzzledata
+
+    def get_clues(self):
+        """ Reads the puzzle file and returns a dictionary object of the clues """
+        puzzledata = self.read_puzzle()
+        return puzzledata.clue_numbering()
+
+    def render_puzzle(self):
+        puzzledata = self.read_puzzle()
+
+        width = puzzledata.width
+        height = puzzledata.height
+
+    def get_puzzle_from_source(self):
+        filename = self.source.parse_filename()
+
+
 
     def save(self, *args, **kwargs):
-        """Save crossword metadata"""
+        """ Save crossword metadata """
         super(Puzzle, self).save(*args, **kwargs)
         puzzledata = self.read_puzzle()
 

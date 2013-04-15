@@ -1,14 +1,19 @@
 from django.conf.urls import patterns, url
 from django.views.generic import DetailView, ListView
 from puzzles.models import Puzzle
-from puzzles.views import PuzzleListView, PuzzleDetailView
+from puzzles import views
 
 urlpatterns = patterns('',
     url(r'^$',
-        PuzzleListView.as_view(),
+        views.PuzzleListView.as_view(),
         name='list'),
 
     url(r'^(?P<pk>\d+)/$',
-    PuzzleDetailView.as_view(),
-    name='detail'),
+        views.PuzzleDetailView.as_view(),
+        name='detail'),
+    url(
+        r'^api/(?P<pk>[-\w]+)/$',
+        views.PuzzleObjectApiView.as_view(),
+        name='puzzle_object_api'
+    ),
 )

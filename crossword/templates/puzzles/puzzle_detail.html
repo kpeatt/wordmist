@@ -1,20 +1,32 @@
-<h1>{{ puzzle.title }}</h1>
+{% extends "base.html" %}
+{% load staticfiles %}
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% block page_title %}{{ puzzle.title }}{% endblock page_title %}
 
-{{ puzzle.author }}
-{{ puzzle.copyright }}
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "css/about.css" %}">
+{% endblock stylesheets %}
 
-<h2>Across</h2>
-<ol class="across">
-	{% for clue in clues.across %}
-		<li value="{{ clue.num }}">{{ clue.clue }} ({{ clue.len }})</li>
-	{% endfor %}
-</ol>
+{% block content %}
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<h2>Down</h2>
-<ol class="down">
-	{% for clue in clues.down %}
-		<li value="{{ clue.num }}">{{ clue.clue }} ({{ clue.len }})</li>
-	{% endfor %}
-</ol>
+	{{ puzzle.author }}
+	{{ puzzle.copyright }}
+	{{ filename }}
+
+	<h2>Across</h2>
+	<ol class="across">
+		{% for clue in clues.across %}
+			<li value="{{ clue.num }}">{{ clue.clue }} ({{ clue.len }})</li>
+		{% endfor %}
+	</ol>
+
+	<h2>Down</h2>
+	<ol class="down">
+		{% for clue in clues.down %}
+			<li value="{{ clue.num }}">{{ clue.clue }} ({{ clue.len }})</li>
+		{% endfor %}
+	</ol>
+
+{% endblock content %}
